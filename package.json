@@ -1,0 +1,24 @@
+{
+  "name": "own_local_musicapp",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/BramM15/Own_Local_musicapp#readme",
+  "bugs": {
+    "url": "https://github.com/BramM15/Own_Local_musicapp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BramM15/Own_Local_musicapp.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "electron": "^40.1.0"
+  }
+}
