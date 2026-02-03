@@ -1,7 +1,6 @@
-const { contextBridge } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron
-})
+contextBridge.exposeInMainWorld('electronAPI', {
+  checkBestand: (pad) => ipcRenderer.invoke('lees-muziek-bestand', pad),
+  getMetadata: (pad) => ipcRenderer.invoke('lees-muziek-metadata', pad)
+});

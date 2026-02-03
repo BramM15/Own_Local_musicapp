@@ -20,5 +20,8 @@
   },
   "devDependencies": {
     "electron": "^40.1.0"
+  },
+  "dependencies": {
+    "music-metadata": "^11.11.2"
   }
 }
