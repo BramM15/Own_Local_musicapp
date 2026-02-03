@@ -1,38 +1,38 @@
 import React, { useState } from 'react';
 
-function MuziekTester() {
+function MusicTester() {
   const [status, setStatus] = useState('Nog niet getest');
-  const [pad, setPad] = useState(); // Pas dit pad aan!
+  const [filePath, setFilePath] = useState(); // Adjust this path!
 
-  const testBestand = async () => {
+  const testFile = async () => {
     try {
       setStatus('Laden...');
 
-      const data = await window.electronAPI.checkBestand(pad);
+      const data = await window.electronAPI.readMusicFile(filePath);
 
       if (data) {
         setStatus('Bestand gevonden');
-        console.log('Bestand data:', data);
-        await getMetadata();
+        console.log('File data:', data);
+        await readMetadata();
       }
     } catch (error) {
-      console.error('Fout:', error);
+      console.error('Error:', error);
       setStatus('Fout: Bestand niet gevonden of pad is onjuist.');
     }
   };
 
-    const getMetadata = async () => {
+    const readMetadata = async () => {
     try {
       setStatus('Metadata laden...');
 
-      const data = await window.electronAPI.getMetadata(pad);
+      const data = await window.electronAPI.readMusicMetadata(filePath);
 
       if (data) {
         setStatus('Bestand metadata gevonden');
-        console.log('Bestand metadata:', data);
+        console.log('File metadata:', data);
       }
     } catch (error) {
-      console.error('Fout:', error);
+      console.error('Error:', error);
       setStatus('Fout: Bestand niet gevonden of pad is onjuist.');
     }
   };
@@ -43,13 +43,13 @@ function MuziekTester() {
       </h3>
       <input 
         type="text" 
-        value={pad} 
-        onChange={(e) => setPad(e.target.value)} 
+        value={filePath} 
+        onChange={(e) => setFilePath(e.target.value)} 
       />
-      <button onClick={testBestand}>Check Bestand</button>
+      <button onClick={testFile}>Check Bestand</button>
       <p>Status: <strong>{status}</strong></p>
     </div>
   );
 }
 
-export default MuziekTester;
+export default MusicTester;
