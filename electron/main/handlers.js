@@ -9,6 +9,10 @@ const registerMusicHandlers = () => {
   ipcMain.handle('read-music-metadata', async (event, filePath) => {
     return await readMusicMetadata(filePath);
   });
+
+  // ipcMain.handle('read-music-directory', async (event, directoryPath) => {
+  //   return await readMusicDirectory(directoryPath);
+  // });
 };
 
 module.exports = {

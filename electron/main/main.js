@@ -1,9 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const { createWindow } = require('./windows');
 const { registerMusicHandlers } = require('./handlers');
-const { initDatabase } = require('../service/database');
-
-initDatabase();
 
 registerMusicHandlers();
 
