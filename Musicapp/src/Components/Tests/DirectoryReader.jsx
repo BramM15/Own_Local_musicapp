@@ -10,10 +10,19 @@ export default function DirectoryReader() {
 
             const data = await window.electronAPI.readMusicDirectory(directoryPath);
 
-            if (data) {
-                setStatus('Directory gevonden');
-                console.log('Directory data:', data);
-                await readMetadata();
+            if (!data) {
+                setStatus('Fout: Directory niet gevonden of pad is onjuist.');
+                return;
+            }
+            console.log('Directory data:', data);
+            setStatus('Saving directory data...');
+
+            const saveResult = await window.electronAPI.saveMusicPaths(data);
+
+            if (saveResult.success) {
+                setStatus('Directory data succesvol opgeslagen.');
+            } else {
+                setStatus('Fout: Kon directory data niet opslaan.');
             }
         } catch (error) {
             console.error('Error:', error);

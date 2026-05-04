@@ -1,20 +1,37 @@
-// const fs = require('node:fs');
-// const { parseFile } = require('music-metadata');
+const fs = require('node:fs');
+const path = require('node:path');
 
-// const readMusicDirectory = async (directoryPath) => {
-//   try {
-//     const files = fs.readdirSync(directoryPath);
-//     const musicFiles = files.filter(file => {
-//       const ext = file.split('.').pop().toLowerCase();
-//       return ['mp3', 'flac', 'wav', 'aac'].includes(ext);
-//     });
-//     return musicFiles;
-//   } catch (error) {
-//     console.error("Error reading directory:", error);
-//     throw error;
-//   }
-// };
+const getAllMusicFiles = (directoryPath) => {
+  let results = [];
+  const list = fs.readdirSync(directoryPath);
+  const musicExtensions = ['.mp3', '.flac', '.wav', '.aac', '.m4a', '.ogg'];
 
-// module.exports = {
-//   readMusicDirectory
-// };
+  list.forEach((file) => {
+    const filePath = path.join(directoryPath, file);
+    const stat = fs.statSync(filePath);
+
+    if (stat && stat.isDirectory()) {
+      results = results.concat(getAllMusicFiles(filePath));
+    } else {
+      const ext = path.extname(filePath).toLowerCase();
+      if (musicExtensions.includes(ext)) {
+        results.push(filePath);
+      }
+    }
+  });
+
+  return results;
+};
+
+const readMusicDirectory = async (directoryPath) => {
+  try {
+    return getAllMusicFiles(directoryPath);
+  } catch (error) {
+    console.error("Error reading directory recursively:", error);
+    throw error;
+  }
+};
+
+module.exports = {
+  readMusicDirectory
+};
