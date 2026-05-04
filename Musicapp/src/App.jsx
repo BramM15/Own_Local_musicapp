@@ -5,14 +5,14 @@ import Settings from './Pages/Settings.jsx'
 import Test from './Pages/Test.jsx'
 
 function App() {
-  const [songs, setSongs] = useState([]);
+  const [library, setLibrary] = useState(null);
 
   useEffect(() => {
     const fetchLibrary = async () => {
       const result = await window.electronAPI.loadMusicLibrary();
       if (result.success) {
         console.log("Bibliotheek geladen, laatste update:", result.lastUpdated);
-        setSongs(result.paths);
+        setLibrary(result);
       } else {
         console.log("Nog geen bibliotheek gevonden. Scan eerst een map.");
       }
@@ -24,7 +24,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Settings />} />
+        <Route path="/" element={<Home library={library || []} />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/test" element={<Test />} />
       </Routes>
