@@ -3,7 +3,7 @@ import FileReader from '../Components/Tests/FileReader.jsx';
 
 export default function Test() {
   return (
-    <div className="p-8 bg-gray-900 text-white min-h-screen">
+    <div>
       <h3>Test omgeving:</h3>
       <FileReader />
       <DirectoryReader />
