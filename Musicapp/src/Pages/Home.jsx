@@ -160,6 +160,17 @@ export default function Home({ library, fetchLibrary }) {
 
   const confirmNewPlaylist = (playlistName) => {
     setShowNewPlaylistPopup(false);
+    const newPlaylist = {
+      id: Date.now().toString(),
+      name: playlistName,
+      tracks: []
+    };
+      const updatedLibrary = {
+        ...library,
+        playlists: [...(library.playlists || []), newPlaylist]
+      };
+      window.electronAPI.saveLibrary(updatedLibrary);
+      fetchLibrary();
   };
 
   React.useEffect(() => {
@@ -176,19 +187,18 @@ export default function Home({ library, fetchLibrary }) {
 
   return (
     <div className="flex h-screen bg-black overflow-hidden">
+      {console.log("Rendering Home met bibliotheek:", library)}
       <Sidebar open={sidebarOpen} handleToggleView={handleToggleView} />
       <div className="flex flex-col flex-1 w-full">
-        <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} handleToggleView={handleToggleView}   />
+        <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} handleToggleView={handleToggleView} />
         {(() => {
           switch (currentView) {
             case 'settings':
               return <Settings />;
-            case 'liked':
-              return <div className="flex-1 bg-black p-4 md:p-6 pb-24 overflow-y-auto text-white">Liked Songs View</div>;
             default:
-              return <Main 
-                library={library} 
-                onSelectSong={handleSelectSong} 
+              return <Main
+                library={library}
+                onSelectSong={handleSelectSong}
                 handleToggleView={handleToggleView}
                 onChangeDirectory={handleChangeDirectory}
                 onLikedSongs={handleLikedSongs}

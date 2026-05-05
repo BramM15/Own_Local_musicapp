@@ -10,11 +10,9 @@ function App() {
   const fetchLibrary = async () => {
     const result = await window.electronAPI.loadMusicLibrary();
     if (result.success) {
-      console.log("Bibliotheek geladen, laatste update:", result.lastUpdated);
+      console.log("Bibliotheek geladen:", result);
       setLibrary(result);
-    } else {
-      console.log("Nog geen bibliotheek gevonden. Scan eerst een map.");
-    }
+    } 
   };
 
   useEffect(() => {

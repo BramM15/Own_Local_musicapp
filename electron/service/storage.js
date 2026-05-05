@@ -4,19 +4,34 @@ const { app } = require('electron');
 
 const saveMusicPaths = async (paths) => {
   try {
+    const existingData = await loadMusicLibrary();
+
+    return await saveLibrary({
+      ...existingData,
+      paths: paths
+    });
+  } catch (error) {
+    console.error("Fout bij opslaan paden:", error);
+    throw error;
+  }
+};
+
+const saveLibrary = async (libraryData) => {
+  try {
     const userDataPath = app.getPath('userData');
     const filePath = path.join(userDataPath, 'library.json');
 
-    const data = JSON.stringify({ 
+    const data = JSON.stringify({
       lastUpdated: new Date().toISOString(),
-      count: paths.length,
-      paths: paths 
+      paths: libraryData.paths || [],
+      playlists: libraryData.playlists || [],
+      likedSongs: libraryData.likedSongs || []
     }, null, 2);
 
     fs.writeFileSync(filePath, data, 'utf-8');
-    return { success: true, path: filePath };
+    return { success: true };
   } catch (error) {
-    console.error("Fout bij opslaan JSON:", error);
+    console.error("Fout bij opslaan:", error);
     throw error;
   }
 };
@@ -33,10 +48,12 @@ const loadMusicLibrary = async () => {
     const rawData = fs.readFileSync(filePath, 'utf-8');
     const data = JSON.parse(rawData);
 
-    return { 
-      success: true, 
-      paths: data.paths, 
-      lastUpdated: data.lastUpdated 
+    return {
+      success: true,
+      paths: data.paths,
+      playlists: data.playlists || [],
+      likedSongs: data.likedSongs || [],
+      lastUpdated: data.lastUpdated
     };
   } catch (error) {
     console.error("Fout bij ophalen JSON:", error);
@@ -44,4 +61,5 @@ const loadMusicLibrary = async () => {
   }
 };
 
-module.exports = { saveMusicPaths, loadMusicLibrary };
+
+module.exports = { saveMusicPaths, loadMusicLibrary, saveLibrary };
