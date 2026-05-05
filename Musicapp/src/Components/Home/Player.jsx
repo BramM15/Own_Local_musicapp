@@ -41,7 +41,7 @@ export default function Player({ track, isPlaying, currentTime, onSeek, onToggle
           </button>
           <button
             type="button"
-            onClick={onLike}
+            onClick={() => onLike(track?.path)}
             className="flex items-center gap-2 rounded-full bg-[#282828] px-4 py-2 text-gray-200 text-sm hover:bg-[#3a3a3a]"
           >
             <Heart size={14} /> Like

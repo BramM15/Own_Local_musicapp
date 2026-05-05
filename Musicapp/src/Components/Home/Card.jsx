@@ -1,6 +1,6 @@
 import { Heart, Plus } from "lucide-react";
 
-export default function Card({ title, artist, duration, showImage, onClick }) {
+export default function Card({ title, artist, duration, showImage, onClick, onLike }) {
   return (
     <div
       role="button"
@@ -33,7 +33,10 @@ export default function Card({ title, artist, duration, showImage, onClick }) {
             </button>
             <button
               type="button"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onLike();
+              }}
               className="flex items-center gap-1 text-xs bg-[#282828] hover:bg-[#3a3a3a] px-2 py-1 rounded text-gray-300"
             >
               <Heart size={14} /> Like

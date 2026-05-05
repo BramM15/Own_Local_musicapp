@@ -1,7 +1,7 @@
 import Section from './Section.jsx';
 import CallToAction from './CallToAction.jsx';
 
-export default function Main({ library, onSelectSong, handleToggleView, onChangeDirectory, onLikedSongs, onNewPlaylist }) {
+export default function Main({ library, onSelectSong, handleToggleView, onChangeDirectory, onNewPlaylist, handleLike }) {
   const uploadedSongs = library.paths || [];
   const likedSongs = library.likedSongs || [];
   const playlists = library.playlists || [];
@@ -11,7 +11,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
   };
 
   const handleLikedSongs = () => {
-    onLikedSongs();
+    handleToggleView('liked');
   };
 
   const handleNewPlaylist = () => {
@@ -33,7 +33,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
           </h2>
           <p className="text-lg">No songs found. Start by adding a music directory.</p>
         </div>
-      ) : (<Section title="Your Uploaded Songs" items={uploadedSongs} showImage={false} onSelectSong={onSelectSong} />)}
+      ) : (<Section title="Your Uploaded Songs" items={uploadedSongs} showImage={false} onSelectSong={onSelectSong} handleLike={handleLike}/>)}
 
       {!likedSongs.length ? (
         <div className="text-center text-gray-400 mt-20">
@@ -42,7 +42,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
           </h2>
           <p className="text-lg">No songs found. Start by liking some songs.</p>
         </div>
-      ) : (<Section title="Liked Songs" items={likedSongs} showImage={false} onSelectSong={onSelectSong} />)}
+      ) : (<Section title="Liked Songs" items={likedSongs} showImage={false} onSelectSong={onSelectSong} handleLike={handleLike} />)}
 
       {!playlists.length ? (
         <div className="text-center text-gray-400 mt-20">

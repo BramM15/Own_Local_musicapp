@@ -118,8 +118,17 @@ export default function Home({ library, fetchLibrary }) {
     setCurrentTime(seekTime);
   };
 
-  const handleLike = () => {
-    console.log('Liked track:', currentTrack?.title);
+  const handleLike = (trackPath) => {
+    const isLiked = library.likedSongs?.some(song => song.path === trackPath);
+    const updatedLikedSongs = isLiked
+      ? library.likedSongs.filter(song => song.path !== trackPath)
+      : [...(library.likedSongs || []), library.paths.find(song => song.path === trackPath)].filter(Boolean);
+    const updatedLibrary = {
+      ...library,
+      likedSongs: updatedLikedSongs
+    };
+    window.electronAPI.saveLibrary(updatedLibrary);
+    fetchLibrary();
   };
 
   const handleAdd = () => {
@@ -128,10 +137,6 @@ export default function Home({ library, fetchLibrary }) {
 
   const handleChangeDirectory = () => {
     setShowChangeDirectoryPopup(true);
-  };
-
-  const handleLikedSongs = () => {
-    setCurrentView('liked');
   };
 
   const handleNewPlaylist = () => {
@@ -201,8 +206,8 @@ export default function Home({ library, fetchLibrary }) {
                 onSelectSong={handleSelectSong}
                 handleToggleView={handleToggleView}
                 onChangeDirectory={handleChangeDirectory}
-                onLikedSongs={handleLikedSongs}
                 onNewPlaylist={handleNewPlaylist}
+                handleLike={handleLike}
               />;
           }
         })()}
