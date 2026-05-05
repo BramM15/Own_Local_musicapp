@@ -1,7 +1,8 @@
 import { Heart, Plus } from "lucide-react";
 
-export default function Card({ item, showImage, onClick, onLike, onAdd }) {
-  const { title = "Unknown", artist = "Unknown", duration = "0:00", path } = item || {};
+export default function Card({ item, showImage, onClick, onLike, onAdd, likedSongs = [] }) {
+  const { title = "Unknown", artist = "Unknown", durationFormatted = "0:00", path } = item || {};
+  const isLiked = likedSongs?.some(song => song.path === path);
 
   return (
     <div
@@ -22,7 +23,7 @@ export default function Card({ item, showImage, onClick, onLike, onAdd }) {
         <>
           <div className="flex justify-between text-xs md:text-sm text-gray-400">
             <span className="truncate">{artist}</span>
-            <span>{duration}</span>
+            <span>{durationFormatted}</span>
           </div>
 
           <div className="flex gap-2 mt-2 flex-wrap">
@@ -42,9 +43,13 @@ export default function Card({ item, showImage, onClick, onLike, onAdd }) {
                 e.stopPropagation();
                 onLike?.(path);
               }}
-              className="flex items-center gap-1 text-xs bg-[#282828] hover:bg-[#3a3a3a] px-2 py-1 rounded text-gray-300"
+              className={`flex items-center gap-1 text-xs px-2 py-1 rounded ${
+                isLiked 
+                  ? 'bg-[#1db954] text-black hover:bg-[#16a34a]' 
+                  : 'bg-[#282828] text-gray-300 hover:bg-[#3a3a3a]'
+              }`}
             >
-              <Heart size={14} /> Like
+              <Heart size={14} fill={isLiked ? "currentColor" : "none"} /> Like
             </button>
           </div>
         </>

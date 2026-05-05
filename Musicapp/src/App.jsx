@@ -10,7 +10,6 @@ function App() {
   const fetchLibrary = async () => {
     const result = await window.electronAPI.loadMusicLibrary();
     if (result.success) {
-      console.log("Bibliotheek geladen:", result);
       setLibrary(result);
     } 
   };

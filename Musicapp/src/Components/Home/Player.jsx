@@ -7,13 +7,14 @@ const formatTime = (seconds) => {
   return `${minutes}:${secs}`;
 };
 
-export default function Player({ track, isPlaying, currentTime, onSeek, onTogglePlay, onLike, onAdd }) {
+export default function Player({ track, isPlaying, currentTime, onSeek, onTogglePlay, onLike, onAdd, likedSongs = [] }) {
   const title = track?.title || "Unknown track";
   const artist = track?.artist || "Unknown artist";
   const durationRaw = Number(track?.durationRaw ?? track?.duration ?? 0);
   const durationFormatted = track?.durationFormatted || track?.duration || "0:00";
   const progress = durationRaw > 0 ? Math.min(100, (currentTime / durationRaw) * 100) : 0;
   const currentTimeFormatted = formatTime(currentTime);
+  const isLiked = likedSongs?.some(song => song.path === track?.path);
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#121212] border-t border-[#282828] p-4 md:px-6 z-50">
@@ -34,7 +35,7 @@ export default function Player({ track, isPlaying, currentTime, onSeek, onToggle
           </button>
           <button
             type="button"
-            onClick={onAdd}
+            onClick={() => onAdd?.(track?.path)}
             className="flex items-center gap-2 rounded-full bg-[#282828] px-4 py-2 text-gray-200 text-sm hover:bg-[#3a3a3a]"
           >
             <Plus size={14} /> Add
@@ -42,9 +43,13 @@ export default function Player({ track, isPlaying, currentTime, onSeek, onToggle
           <button
             type="button"
             onClick={() => onLike(track?.path)}
-            className="flex items-center gap-2 rounded-full bg-[#282828] px-4 py-2 text-gray-200 text-sm hover:bg-[#3a3a3a]"
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm ${
+              isLiked
+                ? 'bg-[#1db954] text-black hover:bg-[#16a34a]'
+                : 'bg-[#282828] text-gray-200 hover:bg-[#3a3a3a]'
+            }`}
           >
-            <Heart size={14} /> Like
+            <Heart size={14} fill={isLiked ? "currentColor" : "none"} /> Like
           </button>
         </div>
       </div>

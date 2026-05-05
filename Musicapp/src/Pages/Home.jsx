@@ -6,6 +6,7 @@ import Main from "../Components/Home/Main";
 import Player from "../Components/Home/Player";
 import ChangeDirectoryPopup from "../Components/Popup/ChangeDirectoryPopup";
 import NewPlaylistPopup from "../Components/Popup/NewPlaylistPopup";
+import AddToPlaylistPopup from "../Components/Popup/AddToPlaylistPopup";
 
 export default function Home({ library, fetchLibrary }) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -15,6 +16,8 @@ export default function Home({ library, fetchLibrary }) {
   const [currentView, setCurrentView] = React.useState('home');
   const [showChangeDirectoryPopup, setShowChangeDirectoryPopup] = React.useState(false);
   const [showNewPlaylistPopup, setShowNewPlaylistPopup] = React.useState(false);
+  const [showAddToPlaylistPopup, setShowAddToPlaylistPopup] = React.useState(false);
+  const [selectedTrackForAdd, setSelectedTrackForAdd] = React.useState(null);
   const [status, setStatus] = React.useState('');
   const audioRef = React.useRef(null);
   const objectUrlRef = React.useRef(null);
@@ -131,8 +134,12 @@ export default function Home({ library, fetchLibrary }) {
     fetchLibrary();
   };
 
-  const handleAdd = () => {
-    console.log('Added track:', currentTrack?.title);
+  const handleAdd = (trackPath) => {
+    const track = library.paths?.find(t => t.path === trackPath);
+    if (track) {
+      setSelectedTrackForAdd(track);
+      setShowAddToPlaylistPopup(true);
+    }
   };
 
   const handleChangeDirectory = () => {
@@ -167,7 +174,7 @@ export default function Home({ library, fetchLibrary }) {
     setShowNewPlaylistPopup(false);
     const newPlaylist = {
       id: Date.now().toString(),
-      name: playlistName,
+      title: playlistName,
       tracks: []
     };
       const updatedLibrary = {
@@ -176,6 +183,40 @@ export default function Home({ library, fetchLibrary }) {
       };
       window.electronAPI.saveLibrary(updatedLibrary);
       fetchLibrary();
+  };
+
+  const confirmAddToPlaylist = (playlistId, trackPath, isDelete = false) => {
+    const track = library.paths?.find(t => t.path === trackPath);
+    if (!track) return;
+
+    const updatedPlaylists = library.playlists?.map(playlist => {
+      if (playlist.id === playlistId) {
+        if (isDelete) {
+          // Verwijder track uit playlist
+          return {
+            ...playlist,
+            tracks: playlist.tracks?.filter(t => t.path !== trackPath) || []
+          };
+        } else {
+          // Voeg track toe aan playlist
+          const trackExists = playlist.tracks?.some(t => t.path === trackPath);
+          if (!trackExists) {
+            return {
+              ...playlist,
+              tracks: [...(playlist.tracks || []), track]
+            };
+          }
+        }
+      }
+      return playlist;
+    }) || [];
+
+    const updatedLibrary = {
+      ...library,
+      playlists: updatedPlaylists
+    };
+    window.electronAPI.saveLibrary(updatedLibrary);
+    fetchLibrary();
   };
 
   React.useEffect(() => {
@@ -192,7 +233,6 @@ export default function Home({ library, fetchLibrary }) {
 
   return (
     <div className="flex h-screen bg-black overflow-hidden">
-      {console.log("Rendering Home met bibliotheek:", library)}
       <Sidebar open={sidebarOpen} handleToggleView={handleToggleView} />
       <div className="flex flex-col flex-1 w-full">
         <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} handleToggleView={handleToggleView} />
@@ -222,6 +262,7 @@ export default function Home({ library, fetchLibrary }) {
           onTogglePlay={handleTogglePlay}
           onLike={handleLike}
           onAdd={handleAdd}
+          likedSongs={library.likedSongs}
         />
       )}
       <ChangeDirectoryPopup
@@ -234,6 +275,13 @@ export default function Home({ library, fetchLibrary }) {
         show={showNewPlaylistPopup}
         onClose={() => setShowNewPlaylistPopup(false)}
         onConfirm={confirmNewPlaylist}
+      />
+      <AddToPlaylistPopup
+        show={showAddToPlaylistPopup}
+        onClose={() => setShowAddToPlaylistPopup(false)}
+        onConfirm={confirmAddToPlaylist}
+        playlists={library.playlists || []}
+        trackInfo={selectedTrackForAdd || {}}
       />
     </div>
   );

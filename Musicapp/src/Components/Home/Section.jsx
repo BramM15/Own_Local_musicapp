@@ -1,6 +1,6 @@
 import Card from './Card.jsx';
 
-export default function Section({ title, items, showImage, onSelectSong, onLike, onAdd }) {
+export default function Section({ title, items, showImage, onSelectSong, onLike, onAdd, likedSongs = [] }) {
   return (
     <div className="mb-8">
       <h2 className="text-white text-lg md:text-xl font-bold mb-4">
@@ -16,6 +16,7 @@ export default function Section({ title, items, showImage, onSelectSong, onLike,
             onClick={() => onSelectSong(item)}
             onLike={onLike}
             onAdd={onAdd}
+            likedSongs={likedSongs}
           />
         ))}
       </div>
