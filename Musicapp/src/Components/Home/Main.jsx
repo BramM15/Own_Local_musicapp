@@ -1,7 +1,7 @@
 import Section from './Section.jsx';
 import CallToAction from './CallToAction.jsx';
 
-export default function Main({ library, onSelectSong, handleToggleView, onChangeDirectory, onNewPlaylist, handleLike }) {
+export default function Main({ library, onSelectSong, handleToggleView, onChangeDirectory, onNewPlaylist, onLike, onAdd }) {
   const uploadedSongs = library.paths || [];
   const likedSongs = library.likedSongs || [];
   const playlists = library.playlists || [];
@@ -33,7 +33,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
           </h2>
           <p className="text-lg">No songs found. Start by adding a music directory.</p>
         </div>
-      ) : (<Section title="Your Uploaded Songs" items={uploadedSongs} showImage={false} onSelectSong={onSelectSong} handleLike={handleLike}/>)}
+      ) : (<Section title="Your Uploaded Songs" items={uploadedSongs} showImage={false} onSelectSong={onSelectSong} onLike={onLike} onAdd={onAdd}/>)}
 
       {!likedSongs.length ? (
         <div className="text-center text-gray-400 mt-20">
@@ -42,7 +42,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
           </h2>
           <p className="text-lg">No songs found. Start by liking some songs.</p>
         </div>
-      ) : (<Section title="Liked Songs" items={likedSongs} showImage={false} onSelectSong={onSelectSong} handleLike={handleLike} />)}
+      ) : (<Section title="Liked Songs" items={likedSongs} showImage={false} onSelectSong={onSelectSong} onLike={onLike} onAdd={onAdd} />)}
 
       {!playlists.length ? (
         <div className="text-center text-gray-400 mt-20">
@@ -51,7 +51,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
           </h2>
           <p className="text-lg">No playlists found. Create a new playlist to get started.</p>
         </div>
-      ) : (<Section title="Your Playlists" items={playlists} showImage={true} onSelectSong={onSelectSong} />)}
+      ) : (<Section title="Your Playlists" items={playlists} showImage={true} onSelectSong={onSelectSong} onLike={onLike} onAdd={onAdd} />)}
     </div>
   );
 };

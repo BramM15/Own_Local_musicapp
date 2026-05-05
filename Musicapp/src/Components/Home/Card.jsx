@@ -1,6 +1,8 @@
 import { Heart, Plus } from "lucide-react";
 
-export default function Card({ title, artist, duration, showImage, onClick, onLike }) {
+export default function Card({ item, showImage, onClick, onLike, onAdd }) {
+  const { title = "Unknown", artist = "Unknown", duration = "0:00", path } = item || {};
+
   return (
     <div
       role="button"
@@ -26,7 +28,10 @@ export default function Card({ title, artist, duration, showImage, onClick, onLi
           <div className="flex gap-2 mt-2 flex-wrap">
             <button
               type="button"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd?.(path);
+              }}
               className="flex items-center gap-1 text-xs bg-[#282828] hover:bg-[#3a3a3a] px-2 py-1 rounded text-gray-300"
             >
               <Plus size={14} /> Add
@@ -35,7 +40,7 @@ export default function Card({ title, artist, duration, showImage, onClick, onLi
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onLike();
+                onLike?.(path);
               }}
               className="flex items-center gap-1 text-xs bg-[#282828] hover:bg-[#3a3a3a] px-2 py-1 rounded text-gray-300"
             >

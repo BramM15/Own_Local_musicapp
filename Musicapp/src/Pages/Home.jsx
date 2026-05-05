@@ -207,7 +207,8 @@ export default function Home({ library, fetchLibrary }) {
                 handleToggleView={handleToggleView}
                 onChangeDirectory={handleChangeDirectory}
                 onNewPlaylist={handleNewPlaylist}
-                handleLike={handleLike}
+                onLike={handleLike}
+                onAdd={handleAdd}
               />;
           }
         })()}
