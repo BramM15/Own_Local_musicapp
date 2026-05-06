@@ -12,9 +12,11 @@ import PlaylistView from "../Components/Home/PlaylistView";
 export default function Home({ library, fetchLibrary }) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [currentTrack, setCurrentTrack] = React.useState(null);
+  const [activePlaylistId, setActivePlaylistId] = React.useState(null)
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [currentView, setCurrentView] = React.useState('home');
+  const [shuffleEnabled, setShuffleEnabled] = React.useState(false);
   const [showChangeDirectoryPopup, setShowChangeDirectoryPopup] = React.useState(false);
   const [showNewPlaylistPopup, setShowNewPlaylistPopup] = React.useState(false);
   const [showAddToPlaylistPopup, setShowAddToPlaylistPopup] = React.useState(false);
@@ -22,6 +24,7 @@ export default function Home({ library, fetchLibrary }) {
   const [status, setStatus] = React.useState('');
   const audioRef = React.useRef(null);
   const objectUrlRef = React.useRef(null);
+  const nextTrackLogicRef = React.useRef(null);
 
   const getMimeType = (filePath) => {
     const ext = filePath?.split('.')?.pop()?.toLowerCase();
@@ -52,6 +55,52 @@ export default function Home({ library, fetchLibrary }) {
     return data;
   };
 
+  const getPlaybackQueue = () => {
+    if (currentView === 'playlist') {
+      return library.playlists?.find(p => p.id === activePlaylistId)?.tracks || [];
+    }
+    if (currentView === 'liked') {
+      return library.likedSongs || [];
+    }
+    return library.paths || [];
+  };
+
+  const handleNextTrack = () => {
+    const queue = getPlaybackQueue();
+    if (!queue.length || !currentTrack) {
+      setIsPlaying(false);
+      return;
+    }
+
+    console.log('Current queue for playback:', queue);
+
+    if (shuffleEnabled) {
+      if (queue.length === 1) {
+        setIsPlaying(false);
+        return;
+      }
+      const remaining = queue.filter(track => track.path !== currentTrack.path);
+      const nextTrack = remaining[Math.floor(Math.random() * remaining.length)];
+      if (nextTrack) {
+        setCurrentTrack(nextTrack);
+        setCurrentTime(0);
+        playSong(nextTrack.path);
+      }
+      return;
+    }
+
+    const currentIndex = queue.findIndex(track => track.path === currentTrack.path);
+    const nextIndex = currentIndex >= 0 && currentIndex < queue.length - 1 ? currentIndex + 1 : -1;
+    if (nextIndex >= 0) {
+      const nextTrack = queue[nextIndex];
+      setCurrentTrack(nextTrack);
+      setCurrentTime(0);
+      playSong(nextTrack.path);
+    } else {
+      setIsPlaying(false);
+    }
+  };
+
   const playSong = async (songPath) => {
     if (!songPath) return;
 
@@ -74,7 +123,11 @@ export default function Home({ library, fetchLibrary }) {
       objectUrlRef.current = objectUrl;
       const audio = new Audio(objectUrl);
       audioRef.current = audio;
-      audio.onended = () => setIsPlaying(false);
+      audio.onended = () => {
+        if (nextTrackLogicRef.current) {
+          nextTrackLogicRef.current();
+        }
+      };
       audio.ontimeupdate = () => setCurrentTime(audio.currentTime);
       audio.onloadedmetadata = () => setCurrentTime(audio.currentTime || 0);
 
@@ -90,6 +143,16 @@ export default function Home({ library, fetchLibrary }) {
     setCurrentTrack(track);
     setCurrentTime(0);
     playSong(track.path);
+  };
+
+  const handleSelectPlaylist = (id) => {
+    const playlist = library.playlists?.find(p => p.id === id);
+    if (playlist) {
+      handleToggleView('playlist', id);
+      setCurrentTrack(playlist.tracks[0]);
+      setCurrentTime(0);
+      playSong(playlist.tracks[0].path);
+    }
   };
 
   const handleTogglePlay = () => {
@@ -111,8 +174,15 @@ export default function Home({ library, fetchLibrary }) {
     }
   };
 
-  const handleToggleView = (view) => {
+  const handleToggleView = (view, id = null) => {
     setCurrentView(view);
+    if (view === 'playlist') {
+      setActivePlaylistId(id);
+    }
+  };
+
+  const handleToggleShuffle = () => {
+    setShuffleEnabled(prev => !prev);
   };
 
   const handleSeek = (position) => {
@@ -218,16 +288,65 @@ export default function Home({ library, fetchLibrary }) {
     fetchLibrary();
   };
 
+  const handleDeletePlaylist = (playlistId) => {
+    if (confirm('Weet je zeker dat je deze playlist wilt verwijderen?')) {
+      const updatedPlaylists = library.playlists?.filter(p => p.id !== playlistId) || [];
+      const updatedLibrary = {
+        ...library,
+        playlists: updatedPlaylists
+      };
+      window.electronAPI.saveLibrary(updatedLibrary);
+      handleToggleView('home');
+      fetchLibrary();
+    }
+  };
+
+  const handleUpdatePlaylistTitle = (playlistId, newTitle) => {
+    const updatedPlaylists = library.playlists?.map(p => {
+      if (p.id === playlistId) {
+        return { ...p, title: newTitle };
+      }
+      return p;
+    }) || [];
+    const updatedLibrary = {
+      ...library,
+      playlists: updatedPlaylists
+    };
+    window.electronAPI.saveLibrary(updatedLibrary);
+    fetchLibrary();
+  };
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'settings':
         return <Settings />;
+      case 'search':
+        return <div className="flex-1 bg-black p-4 md:p-6 pb-24 overflow-y-auto">Search View (coming soon)</div>;
+      case 'liked':
+        const likedPlaylistMock = {
+          id: 'liked',
+          title: 'Liked Songs',
+          tracks: library.likedSongs || []
+        };
+
+        return <PlaylistView
+          playlist={likedPlaylistMock}
+          onSelectSong={handleSelectSong}
+          onLike={handleLike}
+          onAdd={handleAdd}
+          onDeletePlaylist={() => { }}
+          onUpdatePlaylistTitle={() => { }}
+          likedSongs={library.likedSongs}
+        />;
       case 'playlist':
-        return <PlaylistView />;
+        const currentPlaylist = library.playlists.find(p => p.id === activePlaylistId);
+        return <PlaylistView playlist={currentPlaylist} onSelectSong={handleSelectSong} onLike={handleLike} onAdd={handleAdd} onDeletePlaylist={handleDeletePlaylist} onUpdatePlaylistTitle={handleUpdatePlaylistTitle} likedSongs={library.likedSongs} />;
       default:
         return <Main
+          isPlaying={isPlaying}
           library={library}
           onSelectSong={handleSelectSong}
+          onSelectPlaylist={handleSelectPlaylist}
           handleToggleView={handleToggleView}
           onChangeDirectory={handleChangeDirectory}
           onNewPlaylist={handleNewPlaylist}
@@ -249,9 +368,13 @@ export default function Home({ library, fetchLibrary }) {
     };
   }, []);
 
+  React.useEffect(() => {
+    nextTrackLogicRef.current = handleNextTrack;
+  });
+
   return (
     <div className="flex h-screen bg-black overflow-hidden">
-      <Sidebar open={sidebarOpen} handleToggleView={handleToggleView} />
+      <Sidebar open={sidebarOpen} handleToggleView={handleToggleView} playlists={library.playlists} />
       <div className="flex flex-col flex-1 w-full">
         <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} handleToggleView={handleToggleView} />
         {renderCurrentView()}
@@ -263,6 +386,8 @@ export default function Home({ library, fetchLibrary }) {
           currentTime={currentTime}
           onSeek={handleSeek}
           onTogglePlay={handleTogglePlay}
+          onToggleShuffle={handleToggleShuffle}
+          shuffleEnabled={shuffleEnabled}
           onLike={handleLike}
           onAdd={handleAdd}
           likedSongs={library.likedSongs}

@@ -1,14 +1,75 @@
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, Trash2, Edit2 } from "lucide-react";
+import { useState } from "react";
 
-export default function PlaylistView({ title, items, onSelectSong, onLike, onAdd, likedSongs = [] }) {
+export default function PlaylistView({ playlist, onSelectSong, onLike, onAdd, onDeletePlaylist, onUpdatePlaylistTitle, likedSongs = [] }) {
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [editedTitle, setEditedTitle] = useState(playlist?.title || "");
+
+    const handleSaveTitle = () => {
+        if (!playlist) return;
+
+        if (editedTitle.trim() && editedTitle !== playlist?.title) {
+            onUpdatePlaylistTitle(playlist.id, editedTitle);
+        }
+        setIsEditingTitle(false);
+    };
+
     return (
-        <div className="mb-8">
-            <h2 className="text-white text-lg md:text-xl font-bold mb-4">
-                {title}
-            </h2>
+        <div className="bg-black p-4 md:p-6 pb-24 mb-24 overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+                {isEditingTitle ? (
+                    <div className="flex gap-2 flex-1">
+                        <input
+                            type="text"
+                            value={editedTitle}
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                            className="flex-1 bg-[#282828] text-white px-3 py-2 rounded border border-[#1db954]"
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSaveTitle();
+                                if (e.key === 'Escape') {
+                                    setIsEditingTitle(false);
+                                    setEditedTitle(playlist?.title);
+                                }
+                            }}
+                        />
+                        <button
+                            onClick={handleSaveTitle}
+                            className="px-4 py-2 bg-[#1db954] text-black rounded font-semibold hover:bg-[#1ed760] transition"
+                        >
+                            Save
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        <h2 className="text-white text-lg md:text-xl font-bold">
+                            {playlist?.title}
+                        </h2>
+                        {playlist.id != 'liked' && (
+
+                            <div className="flex gap-2 ml-auto">
+                                <button
+                                    onClick={() => setIsEditingTitle(true)}
+                                    className="p-2 hover:bg-[#282828] rounded transition text-gray-400 hover:text-[#1db954]"
+                                    title="Edit playlist name"
+                                >
+                                    <Edit2 size={20} />
+                                </button>
+                                <button
+                                    onClick={() => onDeletePlaylist(playlist.id)}
+                                    className="p-2 hover:bg-[#282828] rounded transition text-gray-400 hover:text-red-500"
+                                    title="Delete playlist"
+                                >
+                                    <Trash2 size={20} />
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
 
             <div className="space-y-2">
-                {items.map((item, index) => {
+                {playlist?.tracks.map((item, index) => {
                     const { title: itemTitle = "Unknown", artist = "Unknown", durationFormatted = "0:00", path } = item || {};
                     const isLiked = likedSongs?.some(song => song.path === path);
 
@@ -32,7 +93,7 @@ export default function PlaylistView({ title, items, onSelectSong, onLike, onAdd
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onLike(item);
+                                            onLike(item.path);
                                         }}
                                         className="p-2 hover:text-[#1db954] transition"
                                     >
@@ -44,7 +105,7 @@ export default function PlaylistView({ title, items, onSelectSong, onLike, onAdd
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onAdd(item);
+                                            onAdd(item.path);
                                         }}
                                         className="p-2 hover:text-[#1db954] text-gray-400 transition"
                                     >

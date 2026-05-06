@@ -6,7 +6,6 @@ export default function AddToPlaylistPopup({ show, onClose, onConfirm, playlists
 
   React.useEffect(() => {
     if (show && trackInfo.path) {
-      // Initialiseer geselecteerde playlists met playlists die dit nummer al bevatten
       const playlistsWithTrack = playlists
         .filter(playlist => playlist.tracks?.some(t => t.path === trackInfo.path))
         .map(p => p.id);
@@ -75,7 +74,7 @@ export default function AddToPlaylistPopup({ show, onClose, onConfirm, playlists
                     : 'bg-[#282828] text-gray-200 hover:bg-[#3a3a3a]'
                 }`}
               >
-                <span className="font-medium">{playlist.name}</span>
+                <span className="font-medium">{playlist.title}</span>
                 {selectedPlaylists.includes(playlist.id) && <Check size={18} />}
               </button>
             ))}

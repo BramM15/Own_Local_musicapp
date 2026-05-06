@@ -1,4 +1,4 @@
-export default function Sidebar({ open, handleToggleView }) {
+export default function Sidebar({ open, handleToggleView, playlists }) {
   return (
     <div
       className={`fixed md:static z-40 top-0 left-0 h-full w-64 bg-[#121212] text-gray-300 p-4 flex flex-col gap-6 border-r border-[#282828] transform transition-transform duration-300 ${
@@ -16,9 +16,6 @@ export default function Sidebar({ open, handleToggleView }) {
         <div className="hover:text-white cursor-pointer" onClick={() => handleToggleView('search')}>
           Search
         </div>
-        <div className="hover:text-white cursor-pointer" onClick={() => handleToggleView('library')}>
-          Your Library
-        </div>
       </nav>
 
       <div className="mt-6">
@@ -27,12 +24,15 @@ export default function Sidebar({ open, handleToggleView }) {
           <div className="hover:text-white cursor-pointer" onClick={() => handleToggleView('liked')}>
             Liked Songs
           </div>
-          <div className="hover:text-white cursor-pointer" onClick={() => handleToggleView('playlist1')}>
-            My Playlist #1
-          </div>
-          <div className="hover:text-white cursor-pointer" onClick={() => handleToggleView('playlist2')}>
-            My Playlist #2
-          </div>
+          {playlists?.map((playlist) => (
+            <div
+              key={playlist.id}
+              className="hover:text-white cursor-pointer"
+              onClick={() => handleToggleView('playlist', playlist.id)}
+            >
+              {playlist.title}
+            </div>
+          ))}
         </div>
       </div>
     </div>

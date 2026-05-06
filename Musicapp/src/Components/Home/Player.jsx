@@ -1,4 +1,4 @@
-import { Heart, Plus, Pause, Play } from "lucide-react";
+import { Heart, Plus, Pause, Play, Shuffle } from "lucide-react";
 
 const formatTime = (seconds) => {
   if (typeof seconds !== 'number' || Number.isNaN(seconds)) return '0:00';
@@ -7,7 +7,7 @@ const formatTime = (seconds) => {
   return `${minutes}:${secs}`;
 };
 
-export default function Player({ track, isPlaying, currentTime, onSeek, onTogglePlay, onLike, onAdd, likedSongs = [] }) {
+export default function Player({ track, isPlaying, currentTime, onSeek, onTogglePlay, onToggleShuffle, shuffleEnabled, onLike, onAdd, likedSongs = [] }) {
   const title = track?.title || "Unknown track";
   const artist = track?.artist || "Unknown artist";
   const durationRaw = Number(track?.durationRaw ?? track?.duration ?? 0);
@@ -32,6 +32,13 @@ export default function Player({ track, isPlaying, currentTime, onSeek, onToggle
           >
             {isPlaying ? <Pause size={16} /> : <Play size={16} />} 
             {isPlaying ? "Pause" : "Play"}
+          </button>
+          <button
+            type="button"
+            onClick={onToggleShuffle}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm ${shuffleEnabled ? 'bg-[#1db954] text-black hover:bg-[#16a34a]' : 'bg-[#282828] text-gray-200 hover:bg-[#3a3a3a]'}`}
+          >
+            <Shuffle size={14} /> Shuffle
           </button>
           <button
             type="button"
