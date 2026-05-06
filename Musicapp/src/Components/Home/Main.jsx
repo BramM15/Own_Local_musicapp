@@ -1,5 +1,6 @@
 import Section from './Section.jsx';
 import CallToAction from './CallToAction.jsx';
+import PlaylistView from './PlaylistView.jsx';
 
 export default function Main({ library, onSelectSong, handleToggleView, onChangeDirectory, onNewPlaylist, onLike, onAdd }) {
   const uploadedSongs = library.paths || [];
@@ -25,7 +26,7 @@ export default function Main({ library, onSelectSong, handleToggleView, onChange
         onLikedSongs={handleLikedSongs}
         onNewPlaylist={handleNewPlaylist}
       />
-      
+
       {!uploadedSongs.length ? (
         <div className="text-center text-gray-400 mt-20">
           <h2 className="text-white text-lg md:text-xl font-bold mb-4">

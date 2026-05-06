@@ -7,6 +7,7 @@ import Player from "../Components/Home/Player";
 import ChangeDirectoryPopup from "../Components/Popup/ChangeDirectoryPopup";
 import NewPlaylistPopup from "../Components/Popup/NewPlaylistPopup";
 import AddToPlaylistPopup from "../Components/Popup/AddToPlaylistPopup";
+import PlaylistView from "../Components/Home/PlaylistView";
 
 export default function Home({ library, fetchLibrary }) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -177,12 +178,12 @@ export default function Home({ library, fetchLibrary }) {
       title: playlistName,
       tracks: []
     };
-      const updatedLibrary = {
-        ...library,
-        playlists: [...(library.playlists || []), newPlaylist]
-      };
-      window.electronAPI.saveLibrary(updatedLibrary);
-      fetchLibrary();
+    const updatedLibrary = {
+      ...library,
+      playlists: [...(library.playlists || []), newPlaylist]
+    };
+    window.electronAPI.saveLibrary(updatedLibrary);
+    fetchLibrary();
   };
 
   const confirmAddToPlaylist = (playlistId, trackPath, isDelete = false) => {
@@ -192,13 +193,11 @@ export default function Home({ library, fetchLibrary }) {
     const updatedPlaylists = library.playlists?.map(playlist => {
       if (playlist.id === playlistId) {
         if (isDelete) {
-          // Verwijder track uit playlist
           return {
             ...playlist,
             tracks: playlist.tracks?.filter(t => t.path !== trackPath) || []
           };
         } else {
-          // Voeg track toe aan playlist
           const trackExists = playlist.tracks?.some(t => t.path === trackPath);
           if (!trackExists) {
             return {
@@ -219,6 +218,25 @@ export default function Home({ library, fetchLibrary }) {
     fetchLibrary();
   };
 
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'settings':
+        return <Settings />;
+      case 'playlist':
+        return <PlaylistView />;
+      default:
+        return <Main
+          library={library}
+          onSelectSong={handleSelectSong}
+          handleToggleView={handleToggleView}
+          onChangeDirectory={handleChangeDirectory}
+          onNewPlaylist={handleNewPlaylist}
+          onLike={handleLike}
+          onAdd={handleAdd}
+        />;
+    }
+  }
+
   React.useEffect(() => {
     return () => {
       if (audioRef.current) {
@@ -236,22 +254,7 @@ export default function Home({ library, fetchLibrary }) {
       <Sidebar open={sidebarOpen} handleToggleView={handleToggleView} />
       <div className="flex flex-col flex-1 w-full">
         <Topbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} handleToggleView={handleToggleView} />
-        {(() => {
-          switch (currentView) {
-            case 'settings':
-              return <Settings />;
-            default:
-              return <Main
-                library={library}
-                onSelectSong={handleSelectSong}
-                handleToggleView={handleToggleView}
-                onChangeDirectory={handleChangeDirectory}
-                onNewPlaylist={handleNewPlaylist}
-                onLike={handleLike}
-                onAdd={handleAdd}
-              />;
-          }
-        })()}
+        {renderCurrentView()}
       </div>
       {currentTrack && (
         <Player

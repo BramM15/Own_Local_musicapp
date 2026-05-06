@@ -7,7 +7,7 @@ export default function Section({ title, items, showImage, onSelectSong, onLike,
         {title}
       </h2>    
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
         {items.map((item, index) => (
           <Card
             key={index}
