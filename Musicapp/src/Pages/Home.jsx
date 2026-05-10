@@ -1,5 +1,6 @@
 import React from "react";
 import Settings from "./Settings";
+import Search from "./Search";
 import Sidebar from "../Components/Home/Sidebar";
 import Topbar from "../Components/Home/Topbar";
 import Main from "../Components/Home/Main";
@@ -22,6 +23,8 @@ export default function Home({ library, fetchLibrary }) {
   const [showAddToPlaylistPopup, setShowAddToPlaylistPopup] = React.useState(false);
   const [selectedTrackForAdd, setSelectedTrackForAdd] = React.useState(null);
   const [status, setStatus] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchResults, setSearchResults] = React.useState([]);
   const audioRef = React.useRef(null);
   const objectUrlRef = React.useRef(null);
   const nextTrackLogicRef = React.useRef(null);
@@ -179,6 +182,27 @@ export default function Home({ library, fetchLibrary }) {
     if (view === 'playlist') {
       setActivePlaylistId(id);
     }
+    if (view === 'search') {
+      setSearchQuery('');
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearchQuery = (query) => {
+    setSearchQuery(query);
+    
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    const filteredSongs = library.paths?.filter(song => {
+      const filename = song.path.split('\\').pop().toLowerCase();
+      const cleanFilename = filename.replace(/\.[^.]+$/, '');
+      return cleanFilename.includes(query.toLowerCase());
+    }) || [];
+
+    setSearchResults(filteredSongs);
   };
 
   const handleToggleShuffle = () => {
@@ -321,7 +345,16 @@ export default function Home({ library, fetchLibrary }) {
       case 'settings':
         return <Settings />;
       case 'search':
-        return <div className="flex-1 bg-black p-4 md:p-6 pb-24 overflow-y-auto">Search View (coming soon)</div>;
+        return <Search
+          library={library}
+          searchQuery={searchQuery}
+          setSearchQuery={handleSearchQuery}
+          searchResults={searchResults}
+          onSelectSong={handleSelectSong}
+          onLike={handleLike}
+          onAdd={handleAdd}
+          likedSongs={library.likedSongs}
+        />;
       case 'liked':
         const likedPlaylistMock = {
           id: 'liked',

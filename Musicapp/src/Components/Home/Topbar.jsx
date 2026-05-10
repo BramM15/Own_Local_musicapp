@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 
 export default function Topbar({ toggleSidebar, handleToggleView }) {
   return (
@@ -13,8 +13,17 @@ export default function Topbar({ toggleSidebar, handleToggleView }) {
         <div className="text-white font-semibold text-lg">Good evening</div>
       </div>
 
-      <div onClick={() => handleToggleView('settings')} className="bg-[#1db954] px-3 md:px-4 py-2 rounded-full text-black text-sm font-semibold cursor-pointer hover:bg-[#16a34a]">
-        Profile
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => handleToggleView('search')}
+          className="flex items-center gap-2 bg-[#282828] hover:bg-[#333333] px-3 md:px-4 py-2 rounded-full text-white text-sm font-semibold cursor-pointer transition"
+        >
+          <Search size={18} />
+          <span className="hidden sm:inline">Search</span>
+        </button>
+        <div onClick={() => handleToggleView('settings')} className="bg-[#1db954] px-3 md:px-4 py-2 rounded-full text-black text-sm font-semibold cursor-pointer hover:bg-[#16a34a]">
+          Profile
+        </div>
       </div>
     </div>
   );
