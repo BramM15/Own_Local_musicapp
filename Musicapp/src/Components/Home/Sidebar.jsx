@@ -6,7 +6,7 @@ export default function Sidebar({ open, handleToggleView, playlists }) {
       }`}
     >
       <div className="text-[#1db954] text-2xl font-bold cursor-pointer" onClick={() => handleToggleView('home')}>
-        Lotify
+        Local Music
       </div>
 
       <nav className="flex flex-col gap-4">

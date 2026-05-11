@@ -178,6 +178,7 @@ export default function Home({ library, fetchLibrary }) {
   };
 
   const handleToggleView = (view, id = null) => {
+    setSidebarOpen(false);
     setCurrentView(view);
     if (view === 'playlist') {
       setActivePlaylistId(id);
@@ -376,7 +377,7 @@ export default function Home({ library, fetchLibrary }) {
         return <PlaylistView playlist={currentPlaylist} onSelectSong={handleSelectSong} onLike={handleLike} onAdd={handleAdd} onDeletePlaylist={handleDeletePlaylist} onUpdatePlaylistTitle={handleUpdatePlaylistTitle} likedSongs={library.likedSongs} />;
       default:
         return <Main
-          isPlaying={isPlaying}
+          currentTrack={currentTrack}
           library={library}
           onSelectSong={handleSelectSong}
           onSelectPlaylist={handleSelectPlaylist}

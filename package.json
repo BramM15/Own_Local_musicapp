@@ -1,5 +1,5 @@
 {
-  "name": "own_local_musicapp",
+  "name": "Local_Music_App",
   "version": "1.0.0",
   "description": "",
   "homepage": "https://github.com/BramM15/Own_Local_musicapp#readme",
@@ -11,19 +11,50 @@
     "url": "git+https://github.com/BramM15/Own_Local_musicapp.git"
   },
   "license": "ISC",
-  "author": "",
+  "author": "BramM15",
   "type": "commonjs",
   "main": "electron/main/main.js",
   "scripts": {
     "start": "electron .",
+    "dist": "electron-builder",
+    "publish": "electron-builder --publish always",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "electron": "^40.1.0",
+    "electron-builder": "^26.8.1",
     "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
     "better-sqlite3": "^12.6.2",
     "music-metadata": "^11.11.2"
+  },
+  "build": {
+    "appId": "com.bramm15.localmusicapp",
+    "productName": "Local Music App",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "electron/**/*",
+      "musicapp/dist/**/*",
+      "package.json",
+      "node_modules/**",
+      "Musicapp/node_modules/**"
+    ],
+    "win": {
+      "target": "nsis",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "BramM15",
+          "repo": "Own_Local_musicapp"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

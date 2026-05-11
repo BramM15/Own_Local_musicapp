@@ -1,7 +1,7 @@
 import Section from './Section.jsx';
 import CallToAction from './CallToAction.jsx';
 
-export default function Main({ isPlaying, library, onSelectSong, onSelectPlaylist, handleToggleView, onChangeDirectory, onNewPlaylist, onLike, onAdd }) {
+export default function Main({ currentTrack, library, onSelectSong, onSelectPlaylist, handleToggleView, onChangeDirectory, onNewPlaylist, onLike, onAdd }) {
   const uploadedSongs = library.paths || [];
   const likedSongs = library.likedSongs || [];
   const playlists = library.playlists || [];
@@ -19,7 +19,7 @@ export default function Main({ isPlaying, library, onSelectSong, onSelectPlaylis
   };
 
   return (
-    <div className={`flex-1 bg-black p-4 md:p-6 pb-24 overflow-y-auto ${isPlaying ? 'mb-30' : ''}`}>
+    <div className={`flex-1 bg-black p-4 md:p-6 pb-24 overflow-y-auto ${currentTrack ? 'mb-30' : ''}`}>
       <CallToAction
         onChangeDirectory={handleChangeDirectory}
         onLikedSongs={handleLikedSongs}

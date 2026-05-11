@@ -1,5 +1,7 @@
-const { BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('node:path');
+
+Menu.setApplicationMenu(null);
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -13,7 +15,11 @@ const createWindow = () => {
     }
   });
 
-  win.loadURL('http://localhost:5173');
+  Menu.setApplicationMenu(null);
+
+  win.loadFile(path.join(app.getAppPath(), 'musicapp/dist/index.html'))
+    .catch(e => console.error("Fout bij laden:", e));
+
   return win;
 };
 
